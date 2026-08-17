@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>企业差异化五险一金计算器</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f5f2;
+      --panel: #ffffff;
+      --panel-alt: #fbfbf8;
+      --ink: #16202a;
+      --muted: #5b6773;
+      --line: #d8ddd6;
+      --soft-line: #e8ebe4;
+      --teal: #0f766e;
+      --teal-soft: #e7f4f2;
+      --amber: #b45309;
+      --amber-soft: #fbf0dc;
+      --rose: #b42318;
+      --rose-soft: #fdecea;
+      --success: #166534;
+      --success-soft: #e7f5ea;
+      --shadow: 0 14px 36px rgba(19, 33, 47, 0.06);
+      --radius: 10px;
+      --radius-sm: 8px;
+      --max: 1240px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, #eef2ef 0%, #f7f8f5 26%, #f4f5f2 100%);
+    }
+
+    a { color: inherit; }
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 18px 36px;
+    }
+
+    .topbar {
+      display: grid;
+      gap: 10px;
+      padding: 0 0 22px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0;
+      color: var(--muted);
+      text-transform: none;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.12;
+      font-weight: 650;
+    }
+
+    .lede {
+      margin: 0;
+      max-width: 76ch;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .note-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    section.panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-hd {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--soft-line);
+      background: linear-gradient(180deg, #fff, #fcfcfb);
+    }
+
+    .panel-hd h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .panel-hd p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .panel-bd {
+      padding: 16px 18px 18px;
+    }
+
+    .fields {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.two {
+      grid-template-columns: 1fr 150px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 11px;
+      border: 1px solid #cfd6cf;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: rgba(15, 118, 110, 0.75);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    input[type="number"] { appearance: textfield; }
+
+    .help {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: var(--panel-alt);
+    }
+
+    .switch-row strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .switch-row span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      max-width: 28ch;
+    }
+
+    .switch-row input {
+      width: 42px;
+      min-height: 22px;
+      margin: 0;
+      accent-color: var(--teal);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      border: 1px solid var(--soft-line);
+      border-radius: 9px;
+      padding: 14px 14px 13px;
+      background: linear-gradient(180deg, #fff, #fcfcfa);
+    }
+
+    .metric .k {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .metric .v {
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .metric .sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .box {
+      border: 1px solid var(--soft-line);
+      border-radius: 9px;
+      padding: 14px;
+      background: var(--panel-alt);
+    }
+
+    .box h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .dl {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 12px;
+      align-items: baseline;
+      margin: 0;
+    }
+
+    .dl dt {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dl dd {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--soft-line);
+      margin: 14px 0;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      text-align: left;
+      border-top: 1px solid var(--soft-line);
+      padding: 11px 8px;
+      vertical-align: top;
+    }
+
+    th {
+      border-top: none;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      background: #fafbfa;
+    }
+
+    tbody tr:hover td {
+      background: #fcfdfc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .badge.teal { background: var(--teal-soft); color: var(--teal); border-color: rgba(15,118,110,.15); }
+    .badge.amber { background: var(--amber-soft); color: var(--amber); border-color: rgba(180,83,9,.15); }
+    .badge.rose { background: var(--rose-soft); color: var(--rose); border-color: rgba(180,35,24,.15); }
+    .badge.success { background: var(--success-soft); color: var(--success); border-color: rgba(22,101,52,.15); }
+
+    .compare {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--soft-line);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .compare-item {
+      border: 1px solid var(--soft-line);
+      border-radius: 9px;
+      padding: 13px;
+      background: #fff;
+    }
+
+    .compare-item h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+    }
+
+    .compare-item .big {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+
+    .compare-item .mini {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .plain-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    footer {
+      margin-top: 18px;
+      padding-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1080px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 12px;
+      }
+      h1 {
+        font-size: 26px;
+      }
+      .metrics,
+      .grid-2,
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+      .field.two {
+        grid-template-columns: 1fr;
+      }
+      .switch-row {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="eyebrow">基于《企业差异化五险一金计算器产品需求文档》整理的 MVP</div>
+      <h1>企业差异化五险一金计算器</h1>
+      <p class="lede">
+        这个版本先把最关键的闭环做出来：个人到手、企业成本、城市比较、港币换算、身份提示和税务预留。
+        城市政策采用可配置数据，后续可以继续补更多城市和更精细的税务规则。
+      </p>
+      <div class="note-row">
+        <span>个人月收入 - 社保公积金 - 个税估算</span>
+        <span>企业招聘成本 - 城市政策差异 - 行业工伤费率</span>
+        <span>香港薪资换算 - 身份场景提示 - 企业税务预留</span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <section class="panel">
+        <div class="panel-hd">
+          <h2>输入区</h2>
+          <p>先填收入和城市，再微调公积金比例、行业和企业属性。</p>
+        </div>
+        <div class="panel-bd">
+          <form class="fields" id="calculator-form">
+            <div class="field two">
+              <div>
+                <label for="salaryAmount">月薪</label>
+                <input id="salaryAmount" type="number" min="0" step="0.01" value="40000" />
+              </div>
+              <div>
+                <label for="salaryCurrency">币种</label>
+                <select id="salaryCurrency">
+                  <option value="RMB">RMB</option>
+                  <option value="HKD" selected>HKD</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="fxRate">港币换算</label>
+              <input id="fxRate" type="number" min="0.1" step="0.0001" value="0.92" />
+              <div class="help">按「1 HKD = ? RMB」填写。这个值会影响港币薪资换算。</div>
+            </div>
+
+            <div class="field two">
+              <div>
+                <label for="primaryCity">工作城市</label>
+                <select id="primaryCity"></select>
+              </div>
+              <div>
+                <label for="compareCity">对比城市</label>
+                <select id="compareCity"></select>
+              </div>
+            </div>
+
+            <div class="field two">
+              <div>
+                <label for="fundRate">公积金比例</label>
+                <input id="fundRate" type="number" min="5" max="12" step="0.1" value="7" />
+              </div>
+              <div>
+                <label for="industry">行业</label>
+                <select id="industry">
+                  <option value="software">软件互联网</option>
+                  <option value="finance">金融</option>
+                  <option value="consulting" selected>咨询服务</option>
+                  <option value="trade">贸易</option>
+                  <option value="manufacturing">制造业</option>
+                  <option value="construction">建筑工程</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field two">
+              <div>
+                <label for="companyType">企业类型</label>
+                <select id="companyType">
+                  <option value="domestic" selected>内资企业</option>
+                  <option value="hongkong">港资企业</option>
+                  <option value="foreign">外商独资企业</option>
+                  <option value="joint">中外合资企业</option>
+                </select>
+              </div>
+              <div>
+                <label for="companySize">企业规模</label>
+                <select id="companySize">
+                  <option value="micro">小微企业</option>
+                  <option value="general" selected>一般企业</option>
+                  <option value="large">大型企业</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="pretaxProfit">月度税前利润（可选）</label>
+              <input id="pretaxProfit" type="number" min="0" step="0.01" value="0" />
+              <div class="help">用于企业所得税简化估算。输入 0 时只显示薪酬成本。</div>
+            </div>
+
+            <div class="switch-row">
+              <div>
+                <strong>高新企业</strong>
+                <span>用于企业所得税的简化估算提示。</span>
+              </div>
+              <input id="isHighTech" type="checkbox" />
+            </div>
+
+            <div class="field">
+              <label for="identity">身份场景</label>
+              <select id="identity">
+                <option value="hk_job" selected>香港居民赴内地就业</option>
+                <option value="permit">港澳居民居住证持有人</option>
+                <option value="secondment">香港公司派驻员工</option>
+                <option value="directhire">内地企业直接招聘港籍员工</option>
+              </select>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <div class="stack">
+        <section class="panel">
+          <div class="panel-hd">
+            <h2>结果区</h2>
+            <p>以所选城市为主，展示员工到手、企业成本和城市政策概览。</p>
+          </div>
+          <div class="panel-bd">
+            <div class="metrics">
+              <div class="metric">
+                <div class="k">税前收入（RMB）</div>
+                <div class="v" id="grossRmb">-</div>
+                <div class="sub" id="grossHint">-</div>
+              </div>
+              <div class="metric">
+                <div class="k">员工预计到手</div>
+                <div class="v" id="netPay">-</div>
+                <div class="sub" id="taxHint">-</div>
+              </div>
+              <div class="metric">
+                <div class="k">企业月度成本</div>
+                <div class="v" id="employerCost">-</div>
+                <div class="sub" id="employerHint">-</div>
+              </div>
+              <div class="metric">
+                <div class="k">企业年度成本</div>
+                <div class="v" id="annualCost">-</div>
+                <div class="sub" id="annualHint">-</div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="box">
+                <h3>员工侧拆分</h3>
+                <dl class="dl" id="employeeBreakdown"></dl>
+              </div>
+              <div class="box">
+                <h3>企业侧拆分</h3>
+                <dl class="dl" id="employerBreakdown"></dl>
+              </div>
+            </div>
+
+            <div class="compare">
+              <h3 style="margin:0 0 8px;font-size:14px;">城市比较</h3>
+              <div class="compare-grid">
+                <div class="compare-item">
+                  <h4 id="compareCityA">-</h4>
+                  <div class="big" id="compareNetA">-</div>
+                  <div class="mini" id="compareCostA">-</div>
+                </div>
+                <div class="compare-item">
+                  <h4 id="compareCityB">-</h4>
+                  <div class="big" id="compareNetB">-</div>
+                  <div class="mini" id="compareCostB">-</div>
+                </div>
+              </div>
+              <div class="box" style="margin-top:12px;">
+                <h3 style="margin-top:0;">差异提示</h3>
+                <div class="subtle" id="compareDelta">-</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-hd">
+              <h2>身份与企业提示</h2>
+              <p>这个模块只做场景提示，不直接改动社保规则。</p>
+            </div>
+            <div class="panel-bd">
+              <div class="box">
+                <h3>当前提示</h3>
+                <div class="subtle" id="identityNote">-</div>
+              </div>
+              <div class="divider"></div>
+              <div class="box">
+                <h3>企业属性说明</h3>
+                <div class="subtle" id="companyNote">-</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-hd">
+              <h2>企业税务分析</h2>
+              <p>先给一个简化版本，便于 HR 快速看总成本。</p>
+            </div>
+            <div class="panel-bd">
+              <div class="metrics" style="grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 12px;">
+                <div class="metric">
+                  <div class="k">企业所得税率</div>
+                  <div class="v" id="citRate">-</div>
+                  <div class="sub" id="citReason">-</div>
+                </div>
+                <div class="metric">
+                  <div class="k">企业所得税估算</div>
+                  <div class="v" id="citEstimate">-</div>
+                  <div class="sub" id="citHint">-</div>
+                </div>
+              </div>
+              <div class="box">
+                <h3>说明</h3>
+                <div class="subtle">
+                  增值税与更多行业税务口径已预留在产品方向里，这一版先把「企业真实成本」的主干跑通。
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-hd">
+            <h2>城市政策快照</h2>
+            <p>根据所选城市展示关键参数，方便核对本次测算依据。</p>
+          </div>
+          <div class="panel-bd">
+            <div class="box">
+              <table>
+                <thead>
+                  <tr>
+                    <th>城市</th>
+                    <th>社保基数</th>
+                    <th>养老金</th>
+                    <th>医疗</th>
+                    <th>失业</th>
+                    <th>公积金</th>
+                    <th>工伤</th>
+                  </tr>
+                </thead>
+                <tbody id="policyTable"></tbody>
+              </table>
+            </div>
+            <div class="subtle" style="margin-top:10px;">
+              公积金比例和部分费率受年度公告影响，建议上线前再做一次政策更新。当前页面已把数据结构做成可替换模式，后续维护不会太费劲。
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer>
+      说明：五险一金与个税采用可配置的城市政策数据和简化估算模型。工伤按行业档位简化，企业所得税按税率档简化，适合作为产品 MVP 和方案比较工具。
+    </footer>
+  </div>
+
+  <script>
+    const CITIES = {
+      shenzhen: {
+        name: "深圳",
+        socialBaseMin: 6727,
+        socialBaseMax: 33633,
+        fundBaseMin: 2520,
+        fundBaseMax: 33633,
+        pensionEmployee: 0.08,
+        pensionEmployer: 0.16,
+        medicalEmployee: 0.02,
+        medicalEmployer: 0.06,
+        unemploymentEmployee: 0.002,
+        unemploymentEmployer: 0.008,
+        injuryRates: { low: 0.002, standard: 0.008, high: 0.014 },
+        maternityEmployer: 0.0085,
+        fundMinRate: 0.05,
+        fundMaxRate: 0.12,
+        defaultFundRate: 0.07,
+        policyLabel: "2026年公开政策快照",
+        sources: [
+          "深圳医保：2026年职工医保和生育保险缴费基数上下限公告",
+          "深圳公积金：2026年7月1日起缴存基数调整说明",
+          "深圳社保：企业养老单位费率过渡至16%的公开通知"
+        ]
+      },
+      guangzhou: {
+        name: "广州",
+        socialBaseMin: 5510,
+        socialBaseMax: 27549,
+        fundBaseMin: 2500,
+        fundBaseMax: 39828,
+        pensionEmployee: 0.08,
+        pensionEmployer: 0.16,
+        medicalEmployee: 0.02,
+        medicalEmployer: 0.06,
+        unemploymentEmployee: 0.002,
+        unemploymentEmployer: 0.008,
+        injuryRates: { low: 0.005, standard: 0.01, high: 0.015 },
+        maternityEmployer: 0.0085,
+        fundMinRate: 0.05,
+        fundMaxRate: 0.12,
+        defaultFundRate: 0.07,
+        policyLabel: "2025/2026公开政策快照",
+        sources: [
+          "广州医保：职工医疗保险和生育保险筹资标准",
+          "广州失业：失业保险持续助企减负稳岗",
+          "广州公积金：2025年度缴存调整通知"
+        ]
+      },
+      shanghai: {
+        name: "上海",
+        socialBaseMin: 7460,
+        socialBaseMax: 37302,
+        fundBaseMin: 2690,
+        fundBaseMax: 36921,
+        pensionEmployee: 0.08,
+        pensionEmployer: 0.16,
+        medicalEmployee: 0.02,
+        medicalEmployer: 0.09,
+        unemploymentEmployee: 0.005,
+        unemploymentEmployer: 0.005,
+        injuryRates: { low: 0.002, standard: 0.007, high: 0.019 },
+        maternityEmployer: 0,
+        fundMinRate: 0.05,
+        fundMaxRate: 0.12,
+        defaultFundRate: 0.07,
+        policyLabel: "2025公开政策快照",
+        sources: [
+          "上海医保：继续阶段性降低职工基本医疗保险费率",
+          "上海社保：失业和工伤保险费率通知",
+          "上海公积金：2025年度缴存基数调整温馨提示"
+        ]
+      },
+      beijing: {
+        name: "北京",
+        socialBaseMin: 7162,
+        socialBaseMax: 35811,
+        fundBaseMin: 2540,
+        fundBaseMax: 35811,
+        pensionEmployee: 0.08,
+        pensionEmployer: 0.16,
+        medicalEmployee: 0.02,
+        medicalEmployeeFixed: 3,
+        medicalEmployer: 0.098,
+        unemploymentEmployee: 0.005,
+        unemploymentEmployer: 0.005,
+        injuryRates: { low: 0.002, standard: 0.007, high: 0.019 },
+        maternityEmployer: 0,
+        fundMinRate: 0.05,
+        fundMaxRate: 0.12,
+        defaultFundRate: 0.07,
+        policyLabel: "2025公开政策快照",
+        sources: [
+          "北京社保：2025年度缴费工资基数上下限",
+          "北京医保：职工医保缴费比例答复",
+          "北京公积金：2025住房公积金年度缴存通知"
+        ]
+      }
+    };
+
+    const INDUSTRY_LEVELS = {
+      software: { label: "软件互联网", level: "low" },
+      finance: { label: "金融", level: "low" },
+      consulting: { label: "咨询服务", level: "low" },
+      trade: { label: "贸易", level: "standard" },
+      manufacturing: { label: "制造业", level: "standard" },
+      construction: { label: "建筑工程", level: "high" }
+    };
+
+    const IDENTITY_NOTES = {
+      hk_job: "香港居民赴内地就业：通常按所在城市参保口径测算，建议核对是否需要叠加居住证或派驻身份的特殊规则。",
+      permit: "港澳居民居住证持有人：一般可直接按本地用工场景核算，重点看所在城市的社保和公积金政策。",
+      secondment: "香港公司派驻员工：建议额外确认派驻协议、纳税安排和社保参保地，企业成本口径可能与直接聘用不同。",
+      directhire: "内地企业直接招聘港籍员工：可按用工城市估算五险一金，同时再看企业税务和补充福利安排。"
+    };
+
+    const COMPANY_NOTES = {
+      domestic: "内资企业：基本社保不因企业性质直接变化，更多差异体现在税务、补贴和跨境成本分析。",
+      hongkong: "港资企业：适合叠加跨境薪酬、派驻和税务安排的分析。",
+      foreign: "外商独资企业：可结合行业、补充保险和税务优惠做进一步扩展。",
+      joint: "中外合资企业：建议在税务模型里保留单独标记，方便后续升级 Offer 对比模块。"
+    };
+
+    const taxBands = [
+      { limit: 36000, rate: 0.03, quick: 0 },
+      { limit: 144000, rate: 0.10, quick: 2520 },
+      { limit: 300000, rate: 0.20, quick: 16920 },
+      { limit: 420000, rate: 0.25, quick: 31920 },
+      { limit: 660000, rate: 0.30, quick: 52920 },
+      { limit: 960000, rate: 0.35, quick: 85920 },
+      { limit: Infinity, rate: 0.45, quick: 181920 }
+    ];
+
+    const fmtMoney = new Intl.NumberFormat("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtPct = (num) => `${(num * 100).toFixed(1)}%`;
+
+    const els = {
+      salaryAmount: document.getElementById("salaryAmount"),
+      salaryCurrency: document.getElementById("salaryCurrency"),
+      fxRate: document.getElementById("fxRate"),
+      primaryCity: document.getElementById("primaryCity"),
+      compareCity: document.getElementById("compareCity"),
+      fundRate: document.getElementById("fundRate"),
+      industry: document.getElementById("industry"),
+      companyType: document.getElementById("companyType"),
+      companySize: document.getElementById("companySize"),
+      pretaxProfit: document.getElementById("pretaxProfit"),
+      isHighTech: document.getElementById("isHighTech"),
+      identity: document.getElementById("identity"),
+      grossRmb: document.getElementById("grossRmb"),
+      grossHint: document.getElementById("grossHint"),
+      netPay: document.getElementById("netPay"),
+      taxHint: document.getElementById("taxHint"),
+      employerCost: document.getElementById("employerCost"),
+      employerHint: document.getElementById("employerHint"),
+      annualCost: document.getElementById("annualCost"),
+      annualHint: document.getElementById("annualHint"),
+      employeeBreakdown: document.getElementById("employeeBreakdown"),
+      employerBreakdown: document.getElementById("employerBreakdown"),
+      compareCityA: document.getElementById("compareCityA"),
+      compareCityB: document.getElementById("compareCityB"),
+      compareNetA: document.getElementById("compareNetA"),
+      compareNetB: document.getElementById("compareNetB"),
+      compareCostA: document.getElementById("compareCostA"),
+      compareCostB: document.getElementById("compareCostB"),
+      compareDelta: document.getElementById("compareDelta"),
+      identityNote: document.getElementById("identityNote"),
+      companyNote: document.getElementById("companyNote"),
+      citRate: document.getElementById("citRate"),
+      citReason: document.getElementById("citReason"),
+      citEstimate: document.getElementById("citEstimate"),
+      citHint: document.getElementById("citHint"),
+      policyTable: document.getElementById("policyTable")
+    };
+
+    function numberValue(el) {
+      const value = parseFloat(el.value);
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function round2(value) {
+      return Math.round((value + Number.EPSILON) * 100) / 100;
+    }
+
+    function money(value) {
+      return `¥${fmtMoney.format(round2(value))}`;
+    }
+
+    function formatRate(rate) {
+      return `${(rate * 100).toFixed(1)}%`;
+    }
+
+    function calculateTax(monthlyTaxable) {
+      const annualTaxable = Math.max(0, monthlyTaxable * 12);
+      const band = taxBands.find((item) => annualTaxable <= item.limit);
+      const annualTax = Math.max(0, annualTaxable * band.rate - band.quick);
+      return {
+        annualTaxable,
+        annualTax,
+        monthlyTax: annualTax / 12,
+        band
+      };
+    }
+
+    function resolveCity(id) {
+      return CITIES[id] || CITIES.shenzhen;
+    }
+
+    function calculateCity(city, grossRmb, fundRate, industryKey, profitInput, highTech, companySize) {
+      const socialBase = clamp(grossRmb, city.socialBaseMin, city.socialBaseMax);
+      const fundBase = clamp(grossRmb, city.fundBaseMin, city.fundBaseMax);
+      const injuryRate = city.injuryRates[INDUSTRY_LEVELS[industryKey].level];
+      const employeeMedicalFixed = city.medicalEmployeeFixed || 0;
+
+      const employeePension = socialBase * city.pensionEmployee;
+      const employeeMedical = socialBase * city.medicalEmployee + employeeMedicalFixed;
+      const employeeUnemployment = socialBase * city.unemploymentEmployee;
+      const employeeFund = fundBase * fundRate;
+      const employeeTotal = employeePension + employeeMedical + employeeUnemployment + employeeFund;
+
+      const employerPension = socialBase * city.pensionEmployer;
+      const employerMedical = socialBase * city.medicalEmployer;
+      const employerUnemployment = socialBase * city.unemploymentEmployer;
+      const employerInjury = socialBase * injuryRate;
+      const employerMaternity = socialBase * city.maternityEmployer;
+      const employerFund = fundBase * fundRate;
+      const employerTotal = employerPension + employerMedical + employerUnemployment + employerInjury + employerMaternity + employerFund;
+
+      const taxableIncome = Math.max(0, grossRmb - employeeTotal - 5000);
+      const tax = calculateTax(taxableIncome);
+      const netPay = grossRmb - employeeTotal - tax.monthlyTax;
+      const monthlyLaborCost = grossRmb + employerTotal;
+      const annualLaborCost = monthlyLaborCost * 12;
+      const taxRate = highTech ? 0.15 : (companySize === "micro" ? 0.05 : 0.25);
+      const citEstimate = Math.max(0, profitInput * 12 * taxRate);
+
+      return {
+        socialBase,
+        fundBase,
+        injuryRate,
+        employee: {
+          pension: employeePension,
+          medical: employeeMedical,
+          unemployment: employeeUnemployment,
+          fund: employeeFund,
+          total: employeeTotal
+        },
+        employer: {
+          pension: employerPension,
+          medical: employerMedical,
+          unemployment: employerUnemployment,
+          injury: employerInjury,
+          maternity: employerMaternity,
+          fund: employerFund,
+          total: employerTotal
+        },
+        tax,
+        netPay,
+        monthlyLaborCost,
+        annualLaborCost,
+        citEstimate,
+        citRate: taxRate
+      };
+    }
+
+    function breakdownMarkup(items) {
+      return items.map(([label, value]) => `<dt>${label}</dt><dd>${money(value)}</dd>`).join("");
+    }
+
+    function updatePolicyTable() {
+      const rows = Object.values(CITIES).map((city) => {
+        const injuryLabel = `${formatRate(city.injuryRates.low)} / ${formatRate(city.injuryRates.standard)} / ${formatRate(city.injuryRates.high)}`;
+        return `
+          <tr>
+            <td><strong>${city.name}</strong><br><span class="subtle">${city.policyLabel}</span></td>
+            <td>${money(city.socialBaseMin)} - ${money(city.socialBaseMax)}</td>
+            <td>${formatRate(city.pensionEmployer)} / ${formatRate(city.pensionEmployee)}</td>
+            <td>${formatRate(city.medicalEmployer)} / ${formatRate(city.medicalEmployee)}</td>
+            <td>${formatRate(city.unemploymentEmployer)} / ${formatRate(city.unemploymentEmployee)}</td>
+            <td>${formatRate(city.fundMinRate)} - ${formatRate(city.fundMaxRate)}</td>
+            <td>${injuryLabel}</td>
+          </tr>
+        `;
+      }).join("");
+      els.policyTable.innerHTML = rows;
+    }
+
+    function syncFundRange(city) {
+      els.fundRate.min = (city.fundMinRate * 100).toFixed(1);
+      els.fundRate.max = (city.fundMaxRate * 100).toFixed(1);
+      if (!els.fundRate.dataset.userChanged) {
+        els.fundRate.value = (city.defaultFundRate * 100).toFixed(1);
+      }
+    }
+
+    function compare(c1, c2, grossRmb, fundRate, industryKey, profit, highTech, companySize) {
+      const a = calculateCity(c1, grossRmb, fundRate, industryKey, profit, highTech, companySize);
+      const b = calculateCity(c2, grossRmb, fundRate, industryKey, profit, highTech, companySize);
+      els.compareCityA.textContent = c1.name;
+      els.compareCityB.textContent = c2.name;
+      els.compareNetA.textContent = money(a.netPay);
+      els.compareNetB.textContent = money(b.netPay);
+      els.compareCostA.textContent = `企业月度成本 ${money(a.monthlyLaborCost)}`;
+      els.compareCostB.textContent = `企业月度成本 ${money(b.monthlyLaborCost)}`;
+      const netDelta = b.netPay - a.netPay;
+      const costDelta = b.monthlyLaborCost - a.monthlyLaborCost;
+      const deltaNetClass = netDelta >= 0 ? "success" : "rose";
+      const deltaCostClass = costDelta >= 0 ? "amber" : "success";
+      els.compareDelta.innerHTML = `
+        <span class="badge ${deltaNetClass}">到手差异 ${netDelta >= 0 ? "+" : ""}${money(netDelta)}</span>
+        <span style="display:inline-block;width:10px;"></span>
+        <span class="badge ${deltaCostClass}">企业成本差异 ${costDelta >= 0 ? "+" : ""}${money(costDelta)}</span>
+        <div style="margin-top:10px;">当前比较口径保持收入、行业和税务条件不变，只切换城市政策。</div>
+      `;
+    }
+
+    function render() {
+      const cityId = els.primaryCity.value;
+      const compareId = els.compareCity.value;
+      const city = resolveCity(cityId);
+      const compareCityConfig = resolveCity(compareId);
+      const salary = numberValue(els.salaryAmount);
+      const fxRate = Math.max(0, numberValue(els.fxRate));
+      const grossRmb = els.salaryCurrency.value === "HKD" ? salary * fxRate : salary;
+      const fundRate = clamp(numberValue(els.fundRate) / 100, city.fundMinRate, city.fundMaxRate);
+      const profitInput = Math.max(0, numberValue(els.pretaxProfit));
+      const highTech = els.isHighTech.checked;
+      const industryKey = els.industry.value;
+      const companySize = els.companySize.value;
+      const result = calculateCity(city, grossRmb, fundRate, industryKey, profitInput, highTech, companySize);
+
+      els.grossRmb.textContent = money(grossRmb);
+      els.grossHint.textContent = els.salaryCurrency.value === "HKD"
+        ? `按 1 HKD = ${fmtMoney.format(fxRate)} RMB 换算`
+        : "直接按 RMB 计算";
+
+      els.netPay.textContent = money(result.netPay);
+      els.taxHint.textContent = `个税估算 ${money(result.tax.monthlyTax)} / 月，适用年化税档 ${formatRate(result.tax.band.rate)}`;
+
+      els.employerCost.textContent = money(result.monthlyLaborCost);
+      els.employerHint.textContent = `社保公积金合计 ${money(result.employer.total)}`;
+
+      els.annualCost.textContent = money(result.annualLaborCost + result.citEstimate);
+      els.annualHint.textContent = profitInput > 0
+        ? `含企业所得税简化估算 ${money(result.citEstimate)}`
+        : "未输入利润，暂不计算企业所得税";
+
+      els.employeeBreakdown.innerHTML = breakdownMarkup([
+        ["养老保险", result.employee.pension],
+        ["医疗保险", result.employee.medical],
+        ["失业保险", result.employee.unemployment],
+        ["住房公积金", result.employee.fund],
+        ["员工月度扣除", result.employee.total],
+        ["税后收入", result.netPay]
+      ]);
+
+      els.employerBreakdown.innerHTML = breakdownMarkup([
+        ["养老保险", result.employer.pension],
+        ["医疗保险", result.employer.medical],
+        ["失业保险", result.employer.unemployment],
+        ["工伤保险", result.employer.injury],
+        ["生育保险", result.employer.maternity],
+        ["住房公积金", result.employer.fund],
+        ["企业月度成本", result.monthlyLaborCost]
+      ]);
+
+      els.identityNote.textContent = IDENTITY_NOTES[els.identity.value];
+      els.companyNote.textContent = COMPANY_NOTES[els.companyType.value];
+
+      const taxRate = highTech ? 0.15 : (companySize === "micro" ? 0.05 : 0.25);
+      const taxReason = highTech ? "高新企业按简化 15% 估算" : (companySize === "micro" ? "小微企业按简化 5% 估算" : "一般企业按 25% 估算");
+      els.citRate.textContent = formatRate(taxRate);
+      els.citReason.textContent = taxReason;
+      els.citEstimate.textContent = money(result.citEstimate);
+      els.citHint.textContent = profitInput > 0 ? "以月度利润年化后的简化值" : "未输入利润时为零";
+
+      const other = compareCityConfig;
+      compare(city, other, grossRmb, fundRate, industryKey, profitInput, highTech, companySize);
+
+      updatePolicyTable();
+    }
+
+    function populateCitySelects() {
+      const options = Object.entries(CITIES).map(([id, city]) => `<option value="${id}">${city.name}</option>`).join("");
+      els.primaryCity.innerHTML = options;
+      els.compareCity.innerHTML = options;
+      els.primaryCity.value = "shenzhen";
+      els.compareCity.value = "shanghai";
+      syncFundRange(resolveCity(els.primaryCity.value));
+    }
+
+    function bindEvents() {
+      const inputs = document.querySelectorAll("#calculator-form input, #calculator-form select");
+      inputs.forEach((input) => {
+        input.addEventListener("input", () => {
+          if (input === els.fundRate) {
+            els.fundRate.dataset.userChanged = "1";
+          }
+          if (input === els.primaryCity) {
+            syncFundRange(resolveCity(els.primaryCity.value));
+            els.compareCity.value = els.primaryCity.value === "shenzhen" ? "shanghai" : "shenzhen";
+          }
+          render();
+        });
+        input.addEventListener("change", () => {
+          if (input === els.primaryCity) {
+            syncFundRange(resolveCity(els.primaryCity.value));
+          }
+          if (input === els.fundRate) {
+            els.fundRate.dataset.userChanged = "1";
+          }
+          render();
+        });
+      });
+    }
+
+    populateCitySelects();
+    updatePolicyTable();
+    bindEvents();
+    render();
+  </script>
+</body>
+</html>
