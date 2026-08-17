@@ -8,6 +8,7 @@
     :root {
       color-scheme: light;
       --bg: #f4f5f2;
+      --page-bg: linear-gradient(180deg, #eef2ef 0%, #f7f8f5 26%, #f4f5f2 100%);
       --panel: #ffffff;
       --panel-alt: #fbfbf8;
       --ink: #16202a;
@@ -31,6 +32,7 @@
     body[data-theme="dark"] {
       color-scheme: dark;
       --bg: #0b1220;
+      --page-bg: linear-gradient(180deg, #0b1220 0%, #0f1725 36%, #0b1220 100%);
       --panel: #111827;
       --panel-alt: #0f1725;
       --ink: #e5eef7;
@@ -49,23 +51,22 @@
     body {
       font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       color: var(--ink);
-      background:
-        linear-gradient(180deg, #eef2ef 0%, #f7f8f5 26%, #f4f5f2 100%);
+      background: var(--page-bg);
     }
 
     a { color: inherit; }
     .page {
       max-width: var(--max);
       margin: 0 auto;
-      padding: 18px 16px 24px;
+      padding: 28px 18px 36px;
     }
 
     .topbar {
       display: grid;
-      gap: 8px;
-      padding: 0 0 16px;
+      gap: 10px;
+      padding: 0 0 22px;
       border-bottom: 1px solid var(--line);
-      margin-bottom: 16px;
+      margin-bottom: 22px;
     }
 
     .topbar-head {
@@ -85,7 +86,7 @@
       display: inline-flex;
       border: 1px solid var(--line);
       border-radius: 999px;
-      background: #fff;
+      background: var(--panel);
       overflow: hidden;
       flex: 0 0 auto;
       box-shadow: 0 6px 16px rgba(19, 33, 47, 0.04);
@@ -161,14 +162,14 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 320px minmax(0, 1fr);
-      gap: 14px;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
       align-items: start;
     }
 
     .stack {
       display: grid;
-      gap: 12px;
+      gap: 18px;
     }
 
     section.panel {
@@ -179,22 +180,15 @@
       overflow: hidden;
     }
 
-    .layout > section.panel:first-child {
-      position: sticky;
-      top: 16px;
-      max-height: calc(100vh - 32px);
-      overflow: auto;
-    }
-
     .panel-hd {
-      padding: 12px 14px 10px;
+      padding: 16px 18px 12px;
       border-bottom: 1px solid var(--soft-line);
-      background: linear-gradient(180deg, #fff, #fcfcfb);
+      background: linear-gradient(180deg, var(--panel), var(--panel-alt));
     }
 
     .panel-hd h2 {
       margin: 0;
-      font-size: 16px;
+      font-size: 18px;
       line-height: 1.25;
     }
 
@@ -206,12 +200,12 @@
     }
 
     .panel-bd {
-      padding: 12px 14px 14px;
+      padding: 16px 18px 18px;
     }
 
     .fields {
       display: grid;
-      gap: 12px;
+      gap: 14px;
     }
 
     .field {
@@ -235,9 +229,9 @@
       width: 100%;
       min-height: 40px;
       padding: 9px 11px;
-      border: 1px solid #cfd6cf;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fff;
+      background: var(--panel);
       color: var(--ink);
       font: inherit;
     }
@@ -293,15 +287,15 @@
     .metrics {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
     .metric {
       border: 1px solid var(--soft-line);
       border-radius: 9px;
-      padding: 11px 12px 10px;
-      background: linear-gradient(180deg, #fff, #fcfcfa);
+      padding: 14px 14px 13px;
+      background: linear-gradient(180deg, var(--panel), var(--panel-alt));
     }
 
     .metric .k {
@@ -311,7 +305,7 @@
     }
 
     .metric .v {
-      font-size: 21px;
+      font-size: 24px;
       line-height: 1.1;
       font-weight: 700;
       letter-spacing: 0;
@@ -328,13 +322,13 @@
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      gap: 14px;
     }
 
     .box {
       border: 1px solid var(--soft-line);
       border-radius: 9px;
-      padding: 12px;
+      padding: 14px;
       background: var(--panel-alt);
     }
 
@@ -394,11 +388,11 @@
       font-size: 12px;
       color: var(--muted);
       font-weight: 600;
-      background: #fafbfa;
+      background: var(--panel-alt);
     }
 
     tbody tr:hover td {
-      background: #fcfdfc;
+      background: var(--panel-alt);
     }
 
     .badge {
@@ -416,23 +410,23 @@
     .badge.success { background: var(--success-soft); color: var(--success); border-color: rgba(22,101,52,.15); }
 
     .compare {
-      margin-top: 12px;
-      padding-top: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
       border-top: 1px solid var(--soft-line);
     }
 
     .compare-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 10px;
+      gap: 12px;
+      margin-top: 12px;
     }
 
     .compare-item {
       border: 1px solid var(--soft-line);
       border-radius: 9px;
-      padding: 11px;
-      background: #fff;
+      padding: 13px;
+      background: var(--panel);
     }
 
     .compare-item h4 {
@@ -461,7 +455,7 @@
     }
 
     footer {
-      margin-top: 12px;
+      margin-top: 18px;
       padding-top: 12px;
       color: var(--muted);
       font-size: 12px;
@@ -490,11 +484,6 @@
       }
       .lang-toggle {
         align-self: flex-start;
-      }
-      .layout > section.panel:first-child {
-        position: static;
-        max-height: none;
-        overflow: visible;
       }
       h1 {
         font-size: 26px;
