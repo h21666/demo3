@@ -783,10 +783,12 @@
       hangzhou: {
         name: "杭州",
         nameEn: "Hangzhou",
-        socialBaseMin: 2490,
-        socialBaseMax: 39530,
-        fundBaseMin: 2490,
-        fundBaseMax: 39530,
+        pensionBaseMin: 4812,
+        pensionBaseMax: 24930,
+        medicalBaseMin: 4986,
+        medicalBaseMax: 24930,
+        fundBaseMin: 2660,
+        fundBaseMax: 42151,
         pensionEmployee: 0.08,
         pensionEmployer: 0.16,
         medicalEmployee: 0.02,
@@ -798,12 +800,12 @@
         fundMinRate: 0.05,
         fundMaxRate: 0.12,
         defaultFundRate: 0.07,
-        policyLabelZh: "杭州公开政策快照（上线前复核）",
-        policyLabelEn: "Hangzhou policy snapshot (verify before launch)",
+        policyLabelZh: "2026年杭州官方政策快照",
+        policyLabelEn: "Hangzhou official policy snapshot (2026)",
         sources: [
-          "杭州养老：企业职工基本养老保险相关公开口径",
-          "杭州医保：职工医疗保险筹资与待遇说明",
-          "杭州公积金：2026年度住房公积金调整通知"
+          "杭州养老：2025年底发布的官方文件",
+          "杭州医保：2025年底发布的官方文件",
+          "杭州公积金：2026年7月起执行的官方通知"
         ]
       },
       shenzhen: {
@@ -1277,22 +1279,23 @@
     }
 
     function calculateCity(city, grossRmb, fundRate, industryKey, profitInput, highTech, companySize) {
-      const socialBase = clamp(grossRmb, city.socialBaseMin, city.socialBaseMax);
-      const fundBase = clamp(grossRmb, city.fundBaseMin, city.fundBaseMax);
+      const pensionBase = clamp(grossRmb, city.pensionBaseMin ?? city.socialBaseMin, city.pensionBaseMax ?? city.socialBaseMax);
+      const medicalBase = clamp(grossRmb, city.medicalBaseMin ?? city.socialBaseMin, city.medicalBaseMax ?? city.socialBaseMax);
+      const fundBase = clamp(grossRmb, city.fundBaseMin ?? city.socialBaseMin, city.fundBaseMax ?? city.socialBaseMax);
       const injuryRate = city.injuryRates[INDUSTRY_LEVELS[industryKey].level];
       const employeeMedicalFixed = city.medicalEmployeeFixed || 0;
 
-      const employeePension = socialBase * city.pensionEmployee;
-      const employeeMedical = socialBase * city.medicalEmployee + employeeMedicalFixed;
-      const employeeUnemployment = socialBase * city.unemploymentEmployee;
+      const employeePension = pensionBase * city.pensionEmployee;
+      const employeeMedical = medicalBase * city.medicalEmployee + employeeMedicalFixed;
+      const employeeUnemployment = pensionBase * city.unemploymentEmployee;
       const employeeFund = fundBase * fundRate;
       const employeeTotal = employeePension + employeeMedical + employeeUnemployment + employeeFund;
 
-      const employerPension = socialBase * city.pensionEmployer;
-      const employerMedical = socialBase * city.medicalEmployer;
-      const employerUnemployment = socialBase * city.unemploymentEmployer;
-      const employerInjury = socialBase * injuryRate;
-      const employerMaternity = socialBase * city.maternityEmployer;
+      const employerPension = pensionBase * city.pensionEmployer;
+      const employerMedical = medicalBase * city.medicalEmployer;
+      const employerUnemployment = pensionBase * city.unemploymentEmployer;
+      const employerInjury = pensionBase * injuryRate;
+      const employerMaternity = medicalBase * city.maternityEmployer;
       const employerFund = fundBase * fundRate;
       const employerTotal = employerPension + employerMedical + employerUnemployment + employerInjury + employerMaternity + employerFund;
 
@@ -1305,7 +1308,8 @@
       const citEstimate = Math.max(0, profitInput * 12 * taxRate);
 
       return {
-        socialBase,
+        pensionBase,
+        medicalBase,
         fundBase,
         injuryRate,
         employee: {
@@ -1337,13 +1341,24 @@
       return items.map(([label, value]) => `<dt>${label}</dt><dd>${money(value)}</dd>`).join("");
     }
 
+    function policyBaseText(city) {
+      const hasSplitBases = city.pensionBaseMin != null || city.medicalBaseMin != null || city.fundBaseMin != null;
+      if (!hasSplitBases) {
+        return `${money(city.socialBaseMin)} - ${money(city.socialBaseMax)}`;
+      }
+      if (currentLang === "en") {
+        return `Pension ${money(city.pensionBaseMin ?? city.socialBaseMin)} - ${money(city.pensionBaseMax ?? city.socialBaseMax)}<br>Medical ${money(city.medicalBaseMin ?? city.socialBaseMin)} - ${money(city.medicalBaseMax ?? city.socialBaseMax)}<br>Fund ${money(city.fundBaseMin ?? city.socialBaseMin)} - ${money(city.fundBaseMax ?? city.socialBaseMax)}`;
+      }
+      return `养老 ${money(city.pensionBaseMin ?? city.socialBaseMin)} - ${money(city.pensionBaseMax ?? city.socialBaseMax)}<br>医疗 ${money(city.medicalBaseMin ?? city.socialBaseMin)} - ${money(city.medicalBaseMax ?? city.socialBaseMax)}<br>公积金 ${money(city.fundBaseMin ?? city.socialBaseMin)} - ${money(city.fundBaseMax ?? city.socialBaseMax)}`;
+    }
+
     function updatePolicyTable() {
       const rows = Object.values(CITIES).map((city) => {
         const injuryLabel = `${formatRate(city.injuryRates.low)} / ${formatRate(city.injuryRates.standard)} / ${formatRate(city.injuryRates.high)}`;
         return `
           <tr>
             <td><strong>${cityLabel(city)}</strong><br><span class="subtle">${cityPolicyLabel(city)}</span></td>
-            <td>${money(city.socialBaseMin)} - ${money(city.socialBaseMax)}</td>
+            <td>${policyBaseText(city)}</td>
             <td>${formatRate(city.pensionEmployer)} / ${formatRate(city.pensionEmployee)}</td>
             <td>${formatRate(city.medicalEmployer)} / ${formatRate(city.medicalEmployee)}</td>
             <td>${formatRate(city.unemploymentEmployer)} / ${formatRate(city.unemploymentEmployee)}</td>
